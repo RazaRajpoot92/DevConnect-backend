@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-
+const validator = require('validator')
 
 const userSchema = new mongoose.Schema({
     firstName:{
@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
         lowercase:true,
         required:true,
         unique:true,
+        maxLength: 254,
+        validate: {
+            validator:(value) => validator.isEmail(value),
+            message:"Please Enter valid Email"
+        }
         
     },
     password:{
@@ -29,6 +34,10 @@ const userSchema = new mongoose.Schema({
         required:true,
         maxLength:100,
         minLength:8,
+        validate:{
+            validator: (value)=> validator.isStrongPassword(value),
+            message:"Please Enter stron password"
+        }
         
     },
     age:{
@@ -40,17 +49,20 @@ const userSchema = new mongoose.Schema({
 
     gender:{
         type:String,
-        validate: (val)=>{
-            if(!['male','female','others'].includes(val.toLowerCase())){
-                return "Value not supported, please enter correct gender"
-            }
+        lowercase:true,
+        enum:{
+            values: ["male","female","others"],
+            message:"Value not support, please enter correct gender"
         },
-        lowercase:true
     },
 
     photoUrl: {
         type:String,
-        default: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+        default: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+        validate: {
+            validator: (value) => validator.isURL(value),
+            message:"Please enter valid url"
+        }
     },
     skills:{
         type:[String]

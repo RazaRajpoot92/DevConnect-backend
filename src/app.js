@@ -13,14 +13,23 @@ app.post("/signup", async(req, res)=>{
   //  console.log(req.body)
 
     try{
+
+        const allowedFields = ["firstName","lastName","email", "photUrl","age","gender","skills","password"]
+        const isAllowedFields = Object.keys(req.body).every((k)=> allowedFields.includes(k))
+
+        if(!isAllowedFields){
+            throw new Error("Please enter valid fields")
+        }
+
         const user = new User(req.body)
-        console.log(req.body)
+        //console.log(req.body)
         await user.save()
 
-        res.send("User has been created!")
+        res.status(201).json({success:true,
+            message:"User has been created!"})
 
     }catch(err){
-        res.status(400).send("Error while saving.. Error:"+ err)
+        res.status(400).json({success:false, error:err.message})
     }
 
 })
@@ -47,11 +56,18 @@ app.patch("/user", async (req, res)=>{
     const newUser = req.body 
 
     try{
+        const allowedUpdate = ["id","gender", "firstName", "lastName", "photoUrl"]
+        const isAllowedUpdate = Object.keys(newUser).every((k)=> allowedUpdate.includes(k))
+
+        if(!isAllowedUpdate){
+            throw new Error("Update not allowed")
+        }
+
         const user = await User.findOneAndUpdate({_id: userId}, newUser, {runValidators:true})
        // console.log(user)
         res.send("User has been updated!")
     }catch(err){
-        res.status(400).send("Something went wrong..")
+        res.status(400).send("Something went wrong.."+ err.message)
     }
 })
 
