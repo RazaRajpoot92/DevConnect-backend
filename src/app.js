@@ -14,13 +14,13 @@ app.post("/signup", async(req, res)=>{
 
     try{
         const user = new User(req.body)
-
+        console.log(req.body)
         await user.save()
 
         res.send("User has been created!")
 
     }catch(err){
-        res.send(400).send("Error while saving.. Error:", err.message)
+        res.status(400).send("Error while saving.. Error:"+ err)
     }
 
 })
@@ -47,7 +47,7 @@ app.patch("/user", async (req, res)=>{
     const newUser = req.body 
 
     try{
-        const user = await User.findOneAndUpdate({_id: userId}, newUser)
+        const user = await User.findOneAndUpdate({_id: userId}, newUser, {runValidators:true})
        // console.log(user)
         res.send("User has been updated!")
     }catch(err){
