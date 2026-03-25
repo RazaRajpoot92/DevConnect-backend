@@ -5,8 +5,11 @@ const {validateSignup} = require("./utils/validation.js")
 const {hashPassword} = require("./utils/passwordHash.js")
 const validator = require("validator")
 const bcrypt = require("bcrypt")
+const cookieParser = require("cookie-parser")
+const jwt = require("jsonwebtoken")
 const app = express()
 
+app.use(cookieParser())
 app.use(express.json())
 
 // signup api for creating user in database thorugh usermodel
@@ -48,6 +51,9 @@ app.post("/login", async(req, res)=>{
        const isValid = await bcrypt.compare(password, user.password)
 
        if(isValid){
+        const token =  jwt.sign({"_id":user._id}, "What@isthis12")
+        res.cookie("token",token)
+        
         return res.status(200).json({
             "success":true,
             "message":"LoggedIn successfully"
@@ -66,6 +72,30 @@ app.post("/login", async(req, res)=>{
             "message":error.message
         })
     }
+})
+
+app.get("/profile", async (req, res)=>{
+    
+    try{
+       const {token} =  req.cookies
+       const {_id} = jwt.verify(token, "What@isthis12")
+       const user = await User.findById(_id)
+       if(!user){
+        throw new Error("User not found")
+       }else{
+        res.status(200).json({
+            "success":true,
+            "user data":user,
+        })
+       }
+       
+    }catch(error){
+        res.status(400).json({
+            "success":false,
+            "message":"Invalid request"
+        })
+    }
+
 })
 
 // get user by id
