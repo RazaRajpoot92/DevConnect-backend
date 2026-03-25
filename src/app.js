@@ -1,6 +1,10 @@
 const express = require('express')
 const connectDB = require("./config/database.js")
 const User = require("./models/user.js")
+const {validateSignup} = require("./utils/validation.js")
+const {hashPassword} = require("./utils/passwordHash.js")
+const validator = require("validator")
+const bcrypt = require("bcrypt")
 const app = express()
 
 app.use(express.json())
@@ -10,19 +14,13 @@ app.use(express.json())
 // create user
 app.post("/signup", async(req, res)=>{
 
-  //  console.log(req.body)
-
     try{
+        validateSignup(req)
+        const {firstName, lastName, email , password, age, gender} = req.body
+        const hashPass = await hashPassword(password)
 
-        const allowedFields = ["firstName","lastName","email", "photUrl","age","gender","skills","password"]
-        const isAllowedFields = Object.keys(req.body).every((k)=> allowedFields.includes(k))
+        const user = new User({firstName, lastName, email, age, gender, password:hashPass})
 
-        if(!isAllowedFields){
-            throw new Error("Please enter valid fields")
-        }
-
-        const user = new User(req.body)
-        //console.log(req.body)
         await user.save()
 
         res.status(201).json({success:true,
@@ -32,6 +30,42 @@ app.post("/signup", async(req, res)=>{
         res.status(400).json({success:false, error:err.message})
     }
 
+})
+
+app.post("/login", async(req, res)=>{
+
+    try{
+        const {email, password} = req.body
+        
+        if(!validator.isEmail(email)){
+            throw new Error("Invalid Credential")
+        }
+
+        const user = await User.findOne({email})
+
+        if(!user) throw new Error("Invalid Credential")
+        
+       const isValid = await bcrypt.compare(password, user.password)
+
+       if(isValid){
+        return res.status(200).json({
+            "success":true,
+            "message":"LoggedIn successfully"
+        })
+       }else{
+        return res.status(400).json({
+            "success":false,
+            "message":"Invalid Credentials"
+        })
+       }
+
+    
+    }catch(error){
+        res.status(400).json({
+            "success": false,
+            "message":error.message
+        })
+    }
 })
 
 // get user by id
