@@ -1,17 +1,36 @@
-const adminAuth = (req, res, next)=>{
-    const token = "xyz"
-    const isAutherized = (token === "xyz")
+const jwt = require('jsonwebtoken')
+const User = require('../models/user')
 
-    if(!isAutherized){
-        res.status(401).send("You are not authorized")
-    }else{
-        next()
+const userAuth = async (req, res, next)=>{
+
+    try{
+    const {token} = req.cookies
+    
+    if(!token){
+        throw new Error("Not found, please login")
     }
+    const {_id} = jwt.verify(token, "What@isthis12")
+
+    const user = await User.findById(_id)
+
+    if(!user){
+        throw new Error("User not found, please login")
+    }
+    req.user = user
+    next()
+
+    }catch(error){
+        res.status(400).json({
+            success:false,
+            message:error.message
+        })
+    }
+
     
 }
 
 
 
 module.exports = {
-    adminAuth,
+    userAuth,
 }
