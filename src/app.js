@@ -53,7 +53,7 @@ app.post("/login", async(req, res)=>{
        const isValid = await bcrypt.compare(password, user.password)
 
        if(isValid){
-        const token =  jwt.sign({"_id":user._id}, "What@isthis12")
+        const token =  jwt.sign({"_id":user._id}, "What@isthis12", {expiresIn:"7d"})
         res.cookie("token",token)
         
         return res.status(200).json({
