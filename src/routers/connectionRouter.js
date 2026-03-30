@@ -53,10 +53,10 @@ connectionRouter.post('/request/send/:status/:touserid', userAuth, async (req,re
         })
 
         await newConnectionRequest.save()
-
+        let message = status=="ignored"?"Successfully ignored the profile":"Connection request has been sent!"
         res.status(201).json({
             success:true,
-            message:"Connection Request has been sent!"
+            message
         })
 
 

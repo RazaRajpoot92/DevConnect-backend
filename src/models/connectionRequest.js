@@ -20,6 +20,16 @@ const connectionRequestSchema = new mongoose.Schema({
 
 },{timestamps:true})
 
+connectionRequestSchema.index({toUserId:1, fromUserId:1})
+
+connectionRequestSchema.pre("save", function(){
+    const connectionRequest = this
+    if(connectionRequest.fromUserId.equals(connectionRequest.toUserId)){
+        throw new Error("Invalid connection request")
+    }
+
+})
+
 const ConnectionRequest = new mongoose.model('ConnectionRequest',connectionRequestSchema)
 
 module.exports = ConnectionRequest
