@@ -7,6 +7,7 @@ const {userAuth} = require("./middlewares/auth.js")
 const authRouter = require('./routers/authRouter.js')
 const profileRouter = require('./routers/profileRouter.js')
 const connectionRouter = require('./routers/connectionRouter.js')
+const userRouter = require('./routers/userRouter.js')
 
 const app = express()
 
@@ -15,6 +16,7 @@ app.use(express.json())
 app.use(authRouter)
 app.use(profileRouter)
 app.use(connectionRouter)
+app.use(userRouter)
 
 
 connectDB().then(()=>{
