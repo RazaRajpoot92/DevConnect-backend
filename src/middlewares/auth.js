@@ -7,7 +7,10 @@ const userAuth = async (req, res, next)=>{
     const {token} = req.cookies
     
     if(!token){
-        throw new Error("Not found, please login")
+        return res.status(401).json({
+            success:false,
+            message:"Unauthorized, please login"
+        })
     }
     const {_id} = jwt.verify(token, "What@isthis12")
 

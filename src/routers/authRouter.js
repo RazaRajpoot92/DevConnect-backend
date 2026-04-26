@@ -49,11 +49,11 @@ authRouter.post('/login', async (req, res)=>{
         if(isValid){
             const token = user.getJWT()
             res.cookie("token",token)
-            const {firstName, email,} = user
+            
             return res.status(200).json({
                 success:true,
                 message:"user login successfully",
-                data:{firstName, email},
+                data:user,
             })
         }else{
             return res.status(400).json({
