@@ -66,6 +66,9 @@ const userSchema = new mongoose.Schema({
             message:"Please enter valid url"
         }
     },
+    about:{
+        type:String,
+    },
     skills:{
         type:[String]
     }

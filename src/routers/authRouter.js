@@ -7,7 +7,7 @@ const authRouter = express.Router()
 
 authRouter.post("/signup", async (req, res)=>{
     try{
-        const {firstName, lastName, email, password, age, gender} = req.body
+        const {firstName, lastName, email, password, age, gender, photoUrl, about} = req.body
         const hashPass = await hashPassword(password)
         const user = new User({
             firstName,
@@ -15,7 +15,9 @@ authRouter.post("/signup", async (req, res)=>{
             email,
             password:hashPass,
             age,
-            gender
+            gender,
+            photoUrl,
+            about
         })
 
         await user.save()
