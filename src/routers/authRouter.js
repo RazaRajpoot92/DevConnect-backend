@@ -20,11 +20,15 @@ authRouter.post("/signup", async (req, res)=>{
             about
         })
 
-        await user.save()
+        const savedUser = await user.save()
+
+        const token = savedUser.getJWT()
+        res.cookie('token',token,{expires: new Date(Date.now() + 8 * 3600000)})
 
         return res.status(201).json({
             success:true,
-            message:"User has been created"
+            message:"User has been created",
+            data:savedUser,
         })
     
     }catch(error){
@@ -50,7 +54,7 @@ authRouter.post('/login', async (req, res)=>{
 
         if(isValid){
             const token = user.getJWT()
-            res.cookie("token",token)
+            res.cookie("token",token, {expires: new Date(Date.now() + 8 * 3600000 )})
             
             return res.status(200).json({
                 success:true,

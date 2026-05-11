@@ -5,7 +5,9 @@ const allowedUpdateFields = [
         "lastName",
         "photoUrl",
         "skills",
-        "gender"
+        "gender",
+        "age",
+        "about"
     ]
 
 
